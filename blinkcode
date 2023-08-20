@@ -1,0 +1,60 @@
+const int ledPin = 13;
+const int buttonPin = 8;
+// This code defines a Morse code dictionary that maps each letter of the alphabet to a sequence of dots and dashes.
+const char* secretCode[] = { ".-", "-...", "-.-.", "-..", ".", "..-.", "--.", "....", "..", ".---", "-.-", ".-..", "--", "-.", "---", ".--.", "--.-", ".-.", "...", "-", "..-", "...-", ".--", "-..-", "-.--", "--.." };
+
+// currentLetter keeps track of the index of the current letter being blinked.
+int currentLetter = 0;
+
+// blinking is a flag that indicates whether the blinking is ongoing.
+bool blinking = false;
+
+// This function initializes the LED pin and the button pin.
+void setup() {
+  pinMode(ledPin, OUTPUT);
+  pinMode(buttonPin, INPUT_PULLDOWN);
+}
+
+// This function checks the button pin. If the button is pressed, the blinking flag is flipped, and the currentLetter variable is reset to 0. This resets the blinking sequence.
+void loop() {
+  if (digitalRead(buttonPin) == HIGH) {
+    // Button is pressed, start/reset blinking
+    blinking = !blinking;
+    currentLetter = 0;
+    delay(100);  // Debounce delay
+  }
+
+  // If the blinking flag is set, the code calls the blinkCode() function to blink the LED in Morse code for the current letter.
+  if (blinking) {
+    blinkCode(secretCode[currentLetter]);
+    currentLetter++;
+    if (currentLetter >= sizeof(secretCode) / sizeof(secretCode[0])) {
+      currentLetter = 0;
+    }
+    delay(1000);
+  }
+}
+
+// This function blinks the LED in Morse code for the given string.
+void blinkCode(const char* code) {
+  // Iterate over the characters in the string.
+  for (int i = 0; code[i] != '\0'; i++) {
+    // If the character is a dot, blink the LED for a short duration.
+    if (code[i] == '.') {
+      digitalWrite(ledPin, HIGH);
+      delay(300);
+      digitalWrite(ledPin, LOW);
+      delay(300);
+    }
+    // If the character is a dash, blink the LED for a long duration.
+    else if (code[i] == '-') {
+      digitalWrite(ledPin, HIGH);
+      delay(700);
+      digitalWrite(ledPin, LOW);
+      delay(300);
+    }
+  }
+
+  // Wait for a short delay between letters.
+  delay(500);
+}
